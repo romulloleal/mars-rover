@@ -1,0 +1,83 @@
+.content-rovers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  opacity: 0;
+  transition: 1s opacity;
+}
+
+.content-rovers .rover-info {
+  margin-right: 50px;
+  display: flex;
+  flex-flow: column wrap;
+}
+
+.title {
+  text-transform: uppercase;
+}
+
+.content-rovers .rover-info img {
+  border-radius: 10px;
+}
+
+.filter {
+  display: flex;
+  flex-flow: wrap;
+  align-items: center;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  margin-right: 30px;
+  font-size: 0.8em;
+}
+
+.tooltip svg{
+    font-size: 20px;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 350px;
+  background-color: #555;
+  color: #fff;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -270px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.photos {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.camera-photo{
+  margin-top: 2%;
+  width: 22%;
+  min-width: 250px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 10px #999999;
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+}
+
+.camera.photo img {
+  width: 100%;
+  border-radius: 10px;
+}
