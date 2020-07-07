@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { css } from "@emotion/core";
 import BeatLoader from "react-spinners/BeatLoader";
+import Paginator from "react-hooks-paginator";
 
 import Header from "../inc/header";
 import Footer from "../inc/footer";
@@ -32,9 +33,12 @@ export default function Rover() {
   // array contendo os dados da rover selecionada
   const [roversData, setRoversData] = useState([]);
 
-  // constantes usadas nos filtros
+  // constantes usadas nos filtros e na paginação
   const [sol, setSol] = useState(); // sol é o dia da foto tirada em marte
   const [camera, setCamera] = useState(); // camera do robô
+  const [pages, setPages] = useState(0); // quantidade de paginas das fotos (cada pagina contem 25 paginas)
+  const [offset, setOffset] = useState(0);
+  const [actualPage, setActualPage] = useState(1); // pagina atual das fotos (padrão 1)
 
   // array com as fotos
   const [photos, setPhotos] = useState([]);
@@ -51,12 +55,22 @@ export default function Rover() {
     // retorna as fotos de acordo com o filtro
     await api
       .get(
-        `rovers/${rover}/photos?sol=${sol}&camera=${camera}&api_key=${apiKey}`
+        `rovers/${rover}/photos?sol=${sol}&camera=${camera}&page=${actualPage}&api_key=${apiKey}`
       )
       .then((response) => {
         setPhotos([response.data]);
-        setLoading(false);
       });
+
+    // api utilzada apenas para saber quantos resultados foram obtidos e paginar
+    await api
+      .get(
+        `rovers/${rover}/photos?sol=${sol}&camera=${camera}&api_key=${apiKey}`
+      )
+      .then((response) => {
+        setPages(response.data.photos.length);
+      });
+
+    setLoading(false);
   }
 
   setTimeout(function () {
@@ -69,38 +83,33 @@ export default function Rover() {
       <main>
         <h2 className="title">Rover {rover}</h2>
         <div className="content-rovers">
-          <div className="rover-info">
-            {roversData.map((roversInfo) => (
-              <>
-                <img
-                  src={RoverImg}
-                  alt={roversInfo.photo_manifest.name}
-                  width="300"
-                />
-                {/* <span className="title">{roversInfo.photo_manifest.name}</span> */}
-                <ul>
-                  <li>
-                    <b>Data de lançamento:</b>{" "}
-                    {roversInfo.photo_manifest.launch_date}
-                  </li>
-                  <li>
-                    <b>Data de aterrissagem:</b>{" "}
-                    {roversInfo.photo_manifest.landing_date}
-                  </li>
-                  <li>
-                    <b>Status:</b> {roversInfo.photo_manifest.status}
-                  </li>
-                  <li>
-                    <b>Fotos tiradas: </b>
-                    {roversInfo.photo_manifest.total_photos}
-                  </li>
-                </ul>
-              </>
-            ))}
-          </div>
+          {roversData.map((roversInfo) => (
+            <div className="rover-info" key={roversInfo.photo_manifest.name}>
+              <img
+                src={RoverImg}
+                alt={roversInfo.photo_manifest.name}
+                width="300"
+              />
+              <ul>
+                <li>
+                  <b>Data de lançamento:</b>{" "}
+                  {roversInfo.photo_manifest.launch_date}
+                </li>
+                <li>
+                  <b>Data de aterrissagem:</b>{" "}
+                  {roversInfo.photo_manifest.landing_date}
+                </li>
+                <li>
+                  <b>Status:</b> {roversInfo.photo_manifest.status}
+                </li>
+                <li>
+                  <b>Fotos tiradas: </b>
+                  {roversInfo.photo_manifest.total_photos}
+                </li>
+              </ul>
+            </div>
+          ))}
           <div className="filter">
-            {/* <h2>Informe abaixo os dados para filtrar as fotos</h2> */}
-
             <select name="date" onChange={(e) => setSol(e.target.value)}>
               <option>Selecione um dia</option>
               {roversData.map((filterDate) =>
@@ -111,7 +120,6 @@ export default function Rover() {
                 ))
               )}
             </select>
-
             <select name="camera" onChange={(e) => setCamera(e.target.value)}>
               <option>Selecione uma camera</option>
               {roversData.map((filterCamera) =>
@@ -119,14 +127,16 @@ export default function Rover() {
                   .filter((filteredDate) => filteredDate.sol == sol)
                   .map((filtereds) =>
                     filtereds.cameras.map((cameras) => (
-                      <option value={cameras}>{cameras}</option>
+                      <option value={cameras} key={cameras}>
+                        {cameras}
+                      </option>
                     ))
                   )
               )}
             </select>
-            <div class="tooltip">
+            <div className="tooltip">
               <FaRegQuestionCircle />
-              <span class="tooltiptext">
+              <span className="tooltiptext">
                 <h3>Descrição das câmeras:</h3>
                 <ul>
                   <li>FHAZ - Câmera de prevenção de riscos dianteiros</li>
@@ -163,15 +173,23 @@ export default function Rover() {
           <div className="photos">
             {photos.map((photo) =>
               photo.photos.map((filteredPhotos) => (
-                <>
-                  <div className="camera-photo">
-                    <img src={filteredPhotos.img_src} alt="" />
-                  </div>
-                </>
+                <div className="camera-photo" key={filteredPhotos.id}>
+                  <img src={filteredPhotos.img_src} alt="" />
+                </div>
               ))
             )}
           </div>
         )}
+        <div >
+          <Paginator
+            totalRecords={pages}
+            pageLimit={25}
+            pageNeighbours={1}
+            setOffset={setOffset, () => handlePhotos()}
+            currentPage={actualPage}
+            setCurrentPage={setActualPage}
+          />
+        </div>
       </main>
       <Footer />
     </>
