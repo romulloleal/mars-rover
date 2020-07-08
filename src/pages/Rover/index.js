@@ -33,6 +33,9 @@ export default function Rover() {
   // array contendo os dados da rover selecionada
   const [roversData, setRoversData] = useState([]);
 
+  // maximo de dias da rover em marte
+  const [maxSol, setMaxSol] = useState();
+
   // constantes usadas nos filtros e na paginação
   const [sol, setSol] = useState(); // sol é o dia da foto tirada em marte
   const [camera, setCamera] = useState(); // camera do robô
@@ -47,6 +50,7 @@ export default function Rover() {
   useEffect(() => {
     api.get(`manifests/${rover}?api_key=${apiKey}`).then((response) => {
       setRoversData([response.data]);
+      setMaxSol(response.data.photo_manifest.max_sol);
     });
   }, []);
 
@@ -92,11 +96,11 @@ export default function Rover() {
               />
               <ul>
                 <li>
-                  <b>Data de lançamento:</b>{" "}
+                  <b>Data de lançamento: </b>
                   {roversInfo.photo_manifest.launch_date}
                 </li>
                 <li>
-                  <b>Data de aterrissagem:</b>{" "}
+                  <b>Data de aterrissagem: </b>
                   {roversInfo.photo_manifest.landing_date}
                 </li>
                 <li>
@@ -106,11 +110,16 @@ export default function Rover() {
                   <b>Fotos tiradas: </b>
                   {roversInfo.photo_manifest.total_photos}
                 </li>
+                <li>
+                  <b>Dias em marte: </b>
+                  {roversInfo.photo_manifest.max_sol}
+                </li>
+                <li>Obs: caso o dia não retorne nem uma camera significa que não foram tiradas fotos neste dia</li>
               </ul>
             </div>
           ))}
           <div className="filter">
-            <select name="date" onChange={(e) => setSol(e.target.value)}>
+            {/* <select name="date" onChange={(e) => setSol(e.target.value)}>
               <option>Selecione um dia</option>
               {roversData.map((filterDate) =>
                 filterDate.photo_manifest.photos.map((filtered) => (
@@ -119,7 +128,12 @@ export default function Rover() {
                   </option>
                 ))
               )}
-            </select>
+            </select> */}
+            <input
+              type="text"
+              onChange={(e) => setSol(e.target.value)}
+              placeholder={`Informe um dia de 0 a ${maxSol}`}
+            />
             <select name="camera" onChange={(e) => setCamera(e.target.value)}>
               <option>Selecione uma camera</option>
               {roversData.map((filterCamera) =>
@@ -180,12 +194,12 @@ export default function Rover() {
             )}
           </div>
         )}
-        <div >
+        <div className="pagination">
           <Paginator
             totalRecords={pages}
             pageLimit={25}
             pageNeighbours={1}
-            setOffset={setOffset, () => handlePhotos()}
+            setOffset={(setOffset, () => handlePhotos())}
             currentPage={actualPage}
             setCurrentPage={setActualPage}
           />

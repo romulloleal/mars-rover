@@ -68,11 +68,10 @@ a img {
   border: 0;
 }
 input {
-  width: 80%;
-  padding: 20px;
+  padding: 1rem;
   border-radius: 10px;
-  margin: 0 auto;
-  display: flex;
+  /* margin: 0 auto; */
+  /* display: flex; */
 }
 select {
   padding: 1em;
@@ -162,7 +161,7 @@ header .desc {
 
 main {
   padding: 1rem;
-  width: 80%;
+  width: 95%;
   margin: 0 auto;
   display: flex;
   align-items: center;

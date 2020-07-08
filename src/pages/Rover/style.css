@@ -8,6 +8,7 @@
 
 .content-rovers .rover-info {
   margin-right: 50px;
+  max-width: 300px;
   display: flex;
   flex-flow: column wrap;
 }
@@ -75,6 +76,10 @@
   position: relative;
   overflow: hidden;
   align-items: center;
+}
+
+.pagination{
+  min-width: 100%;
 }
 
 @media only screen and (max-width: 1110px) {
